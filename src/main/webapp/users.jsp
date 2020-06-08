@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
     <title>Users</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
 </head>
 <body>
 <h3><a href="index.html">Home</a></h3>
