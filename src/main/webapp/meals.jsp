@@ -33,7 +33,7 @@
                 <c:when test="${requestScope.edit == meal.id}">
                     <td>${meal.id}
                     <td><label><fmt:parseDate pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" value="${meal.dateTime}"/>
-                        <input form="saveButton" type="text" name="dateTime" value="<fmt:formatDate pattern="dd-MM-yyyy HH:mm" value="${parsedDateTime}"/>"></label>
+                        <input form="saveButton" type="datetime-local" name="dateTime" value="<fmt:formatDate pattern="dd-MM-yyyy HH:mm" value="${parsedDateTime}"/>"></label>
                     <td><label><input form="saveButton" type="text" name="description" value="${meal.description}"></label>
                     <td><label><input form="saveButton" type="text" name="calories" value="${meal.calories}"></label>
                     <td><button form="saveButton" type="submit" name="save" value="${meal.id}">Сохранить</button>
@@ -57,7 +57,7 @@
         <tr style="background-color:DarkKhaki">
             <td>0
             <td><label><jsp:useBean id="now" class="java.util.Date"/>
-                <input form="addButton" type="text" name="dateTime" value="<fmt:formatDate pattern="dd-MM-yyyy HH:mm" value="${now}"/>"></label>
+                <input form="addButton" type="datetime-local" name="dateTime" value="<fmt:formatDate pattern="dd-MM-yyyy HH:mm" value="${now}"/>"></label>
             <td><label><input form="addButton" type="text" name="description" value=""></label>
             <td><label><input form="addButton" type="text" name="calories" value=""></label>
             <td><button form="addButton" type="submit" name="add" value="0">Добавить</button>

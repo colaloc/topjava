@@ -1,5 +1,7 @@
 package ru.javawebinar.topjava.model;
 
+import ru.javawebinar.topjava.util.TimeUtil;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -11,40 +13,20 @@ public class Meal {
 
     private int calories;
 
-    private final int id;
+    private int id;
 
-    public Meal(int id, LocalDateTime dateTime, String description, int calories) {
-        this.id = id;
+    public Meal(LocalDateTime dateTime, String description, int calories) {
         this.dateTime = dateTime;
         this.description = description;
         this.calories = calories;
     }
 
-    public Meal(int id, String dateTime, String description, int calories) {
-        this.id = id;
-        int day = Integer.parseInt(dateTime.split(" ")[0].split("-")[0]);
-        int month = Integer.parseInt(dateTime.split(" ")[0].split("-")[1]);
-        int year = Integer.parseInt(dateTime.split(" ")[0].split("-")[2]);
-        int hours = Integer.parseInt(dateTime.split(" ")[1].split(":")[0]);
-        int minutes = Integer.parseInt(dateTime.split(" ")[1].split(":")[1]);
-        this.dateTime = LocalDateTime.of(year, month, day, hours, minutes);
-        this.description = description;
-        this.calories = calories;
+    public Meal(String dateTime, String description, String calories) {
+        this(TimeUtil.convertStringToLocalDateTime(dateTime), description, Integer.parseInt(calories));
     }
 
     public int getId() {
         return id;
-    }
-
-    public void setMeal(String dateTime, String description, int calories) {
-        int day = Integer.parseInt(dateTime.split(" ")[0].split("-")[0]);
-        int month = Integer.parseInt(dateTime.split(" ")[0].split("-")[1]);
-        int year = Integer.parseInt(dateTime.split(" ")[0].split("-")[2]);
-        int hours = Integer.parseInt(dateTime.split(" ")[1].split(":")[0]);
-        int minutes = Integer.parseInt(dateTime.split(" ")[1].split(":")[1]);
-        this.dateTime = LocalDateTime.of(year, month, day, hours, minutes);
-        this.description = description;
-        this.calories = calories;
     }
 
     public LocalDateTime getDateTime() {
@@ -65,5 +47,21 @@ public class Meal {
 
     public LocalTime getTime() {
         return dateTime.toLocalTime();
+    }
+
+    public void setDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setCalories(int calories) {
+        this.calories = calories;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
