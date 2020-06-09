@@ -19,12 +19,12 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 public class MealServlet extends HttpServlet {
     private static final Logger log = getLogger(MealServlet.class);
-    private DaoMeal daoMemoryMeal;
+    private DaoMeal daoMeal;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        daoMemoryMeal = new DaoMemoryMeal();
+        daoMeal = new DaoMemoryMeal();
     }
 
     @Override
@@ -40,7 +40,7 @@ public class MealServlet extends HttpServlet {
         }
 
         log.debug("forward to meals");
-        request.setAttribute("meals", MealsUtil.filteredByStreams(daoMemoryMeal.getAll(), LocalTime.MIN, LocalTime.MAX, 2000));
+        request.setAttribute("meals", MealsUtil.filteredByStreams(daoMeal.getAll(), LocalTime.MIN, LocalTime.MAX, 2000));
         request.getRequestDispatcher("/meals.jsp").forward(request, response);
     }
 
@@ -53,18 +53,18 @@ public class MealServlet extends HttpServlet {
             switch (param) {
                 case "delete":
                     log.debug("delete meal");
-                    daoMemoryMeal.delete(Integer.parseInt(request.getParameter("delete")));
+                    daoMeal.delete(Integer.parseInt(request.getParameter("delete")));
                     break;
                 case "save":
                     log.debug("update meal");
-                    daoMemoryMeal.update(Integer.parseInt(request.getParameter("save")), new Meal(
+                    daoMeal.update(Integer.parseInt(request.getParameter("save")), new Meal(
                             request.getParameter("dateTime"),
                             request.getParameter("description"),
                             request.getParameter("calories")));
                     break;
                 case "add":
                     log.debug("add meal");
-                    daoMemoryMeal.add(new Meal(request.getParameter("dateTime"),
+                    daoMeal.add(new Meal(request.getParameter("dateTime"),
                             request.getParameter("description"),
                             request.getParameter("calories")));
                     break;
