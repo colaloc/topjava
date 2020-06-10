@@ -5,6 +5,7 @@ import ru.javawebinar.topjava.dao.DaoMeal;
 import ru.javawebinar.topjava.dao.DaoMemoryMeal;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.MealsUtil;
+import ru.javawebinar.topjava.util.TimeUtil;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -13,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalTime;
-import java.util.Enumeration;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -29,14 +29,17 @@ public class MealServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-        if (request.getParameter("edit") != null) {
-            log.debug("set attribute edit");
-            request.setAttribute("edit", request.getParameter("edit"));
-        }
-        if (request.getParameter("create") != null) {
-            log.debug("set attribute create");
-            request.setAttribute("create", request.getParameter("create"));
+        if (request.getParameter("action") != null) {
+            switch (request.getParameter("action")) {
+                case "edit":
+                    log.debug("set attribute edit");
+                    request.setAttribute("edit", request.getParameter("id"));
+                    break;
+                case "create":
+                    log.debug("set attribute create");
+                    request.setAttribute("create", 0);
+                    break;
+            }
         }
 
         log.debug("forward to meals");
@@ -47,26 +50,25 @@ public class MealServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        Enumeration<String> params = request.getParameterNames();
-        while (params.hasMoreElements()) {
-            String param = params.nextElement();
-            switch (param) {
+        for (int i = 0; i < request.getParameterValues("action").length; i++) {
+            switch (request.getParameterValues("action")[i]) {
                 case "delete":
                     log.debug("delete meal");
-                    daoMeal.delete(Integer.parseInt(request.getParameter("delete")));
+                    daoMeal.delete(Integer.parseInt(request.getParameter("id")));
                     break;
                 case "save":
                     log.debug("update meal");
-                    daoMeal.update(Integer.parseInt(request.getParameter("save")), new Meal(
-                            request.getParameter("dateTime"),
+                    Meal meal = new Meal(TimeUtil.convertStringToLocalDateTime(request.getParameter("dateTime")),
                             request.getParameter("description"),
-                            request.getParameter("calories")));
+                            Integer.parseInt(request.getParameter("calories")));
+                    meal.setId(Integer.parseInt(request.getParameter("id")));
+                    daoMeal.update(meal);
                     break;
-                case "add":
+                case "create":
                     log.debug("add meal");
-                    daoMeal.add(new Meal(request.getParameter("dateTime"),
+                    daoMeal.add(new Meal(TimeUtil.convertStringToLocalDateTime(request.getParameter("dateTime")),
                             request.getParameter("description"),
-                            request.getParameter("calories")));
+                            Integer.parseInt(request.getParameter("calories"))));
                     break;
             }
         }

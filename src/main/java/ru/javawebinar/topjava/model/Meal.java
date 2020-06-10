@@ -21,10 +21,6 @@ public class Meal {
         this.calories = calories;
     }
 
-    public Meal(String dateTime, String description, String calories) {
-        this(TimeUtil.convertStringToLocalDateTime(dateTime), description, Integer.parseInt(calories));
-    }
-
     public int getId() {
         return id;
     }

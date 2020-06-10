@@ -12,9 +12,6 @@
 <hr>
 <h2>Meals</h2>
 
-<form method="post" id="saveButton"></form>
-<form method="get" id="editButton"></form>
-<form method="post" id="deleteButton"></form>
 <form method="get" id="cancelButton"></form>
 <form method="get" id="createButton"></form>
 <form method="post" id="addButton"></form>
@@ -29,14 +26,18 @@
 
     <c:forEach items="${requestScope.meals}" var="meal">
         <tr style="background-color:${meal.excess ? 'IndianRed' : 'Green'}">
+            <form method="post" id="saveButton${meal.id}"></form>
+
             <c:choose>
                 <c:when test="${requestScope.edit == meal.id}">
                     <td>${meal.id}
                     <td><label><fmt:parseDate pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" value="${meal.dateTime}"/>
-                        <input form="saveButton" type="datetime-local" name="dateTime" value="<fmt:formatDate pattern="dd-MM-yyyy HH:mm" value="${parsedDateTime}"/>"></label>
-                    <td><label><input form="saveButton" type="text" name="description" value="${meal.description}"></label>
-                    <td><label><input form="saveButton" type="text" name="calories" value="${meal.calories}"></label>
-                    <td><button form="saveButton" type="submit" name="save" value="${meal.id}">Сохранить</button>
+                               <input form="saveButton${meal.id}" type="text" name="dateTime" value="<fmt:formatDate pattern="dd-MM-yyyy HH:mm" value="${parsedDateTime}"/>"></label>
+                    <td><label><input form="saveButton${meal.id}" type="text" name="description" value="${meal.description}"></label>
+                    <td><label><input form="saveButton${meal.id}" type="text" name="calories" value="${meal.calories}"></label>
+                    <td>
+                        <label><input form="saveButton${meal.id}" type="text" name="id" value="${meal.id}" hidden></label>
+                        <button form="saveButton${meal.id}" type="submit" name="action" value="save">Сохранить</button>
                     <td><button form="cancelButton" type="submit">Отмена</button>
                 </c:when>
 
@@ -46,8 +47,12 @@
                         <fmt:formatDate pattern="dd-MM-yyyy HH:mm" value="${parsedDateTime}"/>
                     <td>${meal.description}
                     <td>${meal.calories}
-                    <td><button form="editButton" type="submit" name="edit" value="${meal.id}">Редактировать</button>
-                    <td><button form="deleteButton" type="submit" name="delete" value="${meal.id}">Удалить</button>
+                    <td><form method="get" id="editButton${meal.id}"></form>
+                        <label><input form="editButton${meal.id}" type="text" name="id" value="${meal.id}" hidden></label>
+                        <button form="editButton${meal.id}" type="submit" name="action" value="edit">Редактировать</button>
+                    <td><form method="post" id="deleteButton${meal.id}"></form>
+                        <label><input form="deleteButton${meal.id}" type="text" name="id" value="${meal.id}" hidden></label>
+                        <button form="deleteButton${meal.id}" type="submit" name="action" value="delete">Удалить</button>
                 </c:otherwise>
             </c:choose>
         </tr>
@@ -55,16 +60,16 @@
 
     <c:if test="${requestScope.create == 0}">
         <tr style="background-color:DarkKhaki">
-            <td>0
+            <td><label><input form="addButton" type="text" name="id" value="0" hidden></label>
             <td><label><jsp:useBean id="now" class="java.util.Date"/>
-                <input form="addButton" type="datetime-local" name="dateTime" value="<fmt:formatDate pattern="dd-MM-yyyy HH:mm" value="${now}"/>"></label>
+                <input form="addButton" type="text" name="dateTime" value="<fmt:formatDate pattern="dd-MM-yyyy HH:mm" value="${now}"/>"></label>
             <td><label><input form="addButton" type="text" name="description" value=""></label>
             <td><label><input form="addButton" type="text" name="calories" value=""></label>
-            <td><button form="addButton" type="submit" name="add" value="0">Добавить</button>
+            <td><button form="addButton" type="submit" name="action" value="add">Добавить</button>
             <td><button form="cancelButton" type="submit">Отмена</button>
         </tr>
     </c:if>
 </table>
-<button form="createButton" type="submit" name="create" value="0">Создать</button>
+<button form="createButton" type="submit" name="action" value="create">Создать</button>
 </body>
 </html>
