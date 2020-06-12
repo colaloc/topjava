@@ -25,8 +25,9 @@ public class DaoMemoryMeal implements DaoMeal {
         add(new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410));
     }
 
-    synchronized public Meal add(Meal meal) {
-        meal.setId(countId.incrementAndGet());
+    public Meal add(Meal meal) {
+        if (meal.getId() == 0)
+            meal.setId(generateId());
         meals.put(meal.getId(), meal);
         return meal;
     }
@@ -35,11 +36,8 @@ public class DaoMemoryMeal implements DaoMeal {
         meals.remove(mealId);
     }
 
-    synchronized public Meal update(Meal newMeal) {
-        Meal meal = getById(newMeal.getId());
-        meal.setDateTime(newMeal.getDateTime());
-        meal.setDescription(newMeal.getDescription());
-        meal.setCalories(newMeal.getCalories());
+    public Meal update(Meal meal) {
+        meals.put(meal.getId(), meal);
         return meal;
     }
 
@@ -49,5 +47,9 @@ public class DaoMemoryMeal implements DaoMeal {
 
     public Meal getById(int mealId) {
         return meals.get(mealId);
+    }
+
+    public int generateId() {
+        return countId.incrementAndGet();
     }
 }

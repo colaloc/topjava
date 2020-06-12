@@ -58,17 +58,18 @@ public class MealServlet extends HttpServlet {
                     break;
                 case "save":
                     log.debug("update meal");
-                    Meal meal = new Meal(TimeUtil.convertStringToLocalDateTime(request.getParameter("dateTime")),
+                    Meal updateMeal = new Meal(TimeUtil.convertStringToLocalDateTime(request.getParameter("dateTime")),
                             request.getParameter("description"),
                             Integer.parseInt(request.getParameter("calories")));
-                    meal.setId(Integer.parseInt(request.getParameter("id")));
-                    daoMeal.update(meal);
+                    updateMeal.setId(Integer.parseInt(request.getParameter("id")));
+                    daoMeal.update(updateMeal);
                     break;
                 case "create":
                     log.debug("add meal");
-                    daoMeal.add(new Meal(TimeUtil.convertStringToLocalDateTime(request.getParameter("dateTime")),
+                    Meal newMeal = new Meal(TimeUtil.convertStringToLocalDateTime(request.getParameter("dateTime")),
                             request.getParameter("description"),
-                            Integer.parseInt(request.getParameter("calories"))));
+                            Integer.parseInt(request.getParameter("calories")));
+                    daoMeal.add(newMeal);
                     break;
             }
         }

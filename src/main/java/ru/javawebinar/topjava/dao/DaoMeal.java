@@ -14,4 +14,6 @@ public interface DaoMeal {
     List<Meal> getAll();
 
     Meal getById(int mealId);
+
+    int generateId();
 }
