@@ -32,7 +32,6 @@ public class MealServlet extends HttpServlet {
 
     @Override
     public void destroy() {
-        super.destroy();
         appCtx.close();
     }
 
@@ -47,7 +46,8 @@ public class MealServlet extends HttpServlet {
                 Integer.parseInt(request.getParameter("calories")));
 
         log.info(meal.isNew() ? "Create {}" : "Update {}", meal);
-        mealRestController.create(meal);
+        if (meal.getId() == null) mealRestController.create(meal);
+        else mealRestController.update(meal, meal.getId());
         response.sendRedirect("meals");
     }
 
@@ -71,15 +71,11 @@ public class MealServlet extends HttpServlet {
                 break;
             case "filter":
                 log.info("filter");
-                String startDate = request.getParameter("startDate");
-                String endDate = request.getParameter("endDate");
-                String startTime = request.getParameter("startTime");
-                String endTime = request.getParameter("endTime");
-                request.setAttribute("startDate", startDate);
-                request.setAttribute("endDate", endDate);
-                request.setAttribute("startTime", startTime);
-                request.setAttribute("endTime", endTime);
-                request.setAttribute("meals", mealRestController.getFiltered(startDate, endDate, startTime, endTime));
+                request.setAttribute("meals", mealRestController.getFiltered(
+                        request.getParameter("startDate"),
+                        request.getParameter("endDate"),
+                        request.getParameter("startTime"),
+                        request.getParameter("endTime")));
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;
             case "all":

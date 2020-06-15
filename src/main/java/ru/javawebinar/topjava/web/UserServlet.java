@@ -2,7 +2,6 @@ package ru.javawebinar.topjava.web;
 
 import org.slf4j.Logger;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,17 +13,18 @@ public class UserServlet extends HttpServlet {
     private static final Logger log = getLogger(UserServlet.class);
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        log.debug("forward to users");
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.sendRedirect("users.jsp");
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String action = request.getParameter("action");
-        switch (action == null ? "noAction" : action) {
-            case "login":
-                SecurityUtil.setAuthUserId(Integer.parseInt(request.getParameter("userId")));
-                response.sendRedirect("/topjava/index.html");
-                break;
-            case "noAction":
-                request.getRequestDispatcher("/users.jsp").forward(request, response);
-                break;
+        if (action.equals("login")) {
+            int userId = Integer.parseInt(request.getParameter("userId"));
+            log.debug("login user with userId {}", userId);
+            SecurityUtil.setAuthUserId(userId);
+            response.sendRedirect("index.html");
         }
     }
 }

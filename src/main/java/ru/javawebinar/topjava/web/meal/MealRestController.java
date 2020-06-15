@@ -12,9 +12,12 @@ import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.util.List;
 
+import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
+import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
+
 @Controller
 public class MealRestController {
-    protected final Logger log = LoggerFactory.getLogger(getClass());
+    private static final Logger log = LoggerFactory.getLogger(MealRestController.class);
 
     private final MealService service;
 
@@ -24,8 +27,9 @@ public class MealRestController {
 
     public List<MealTo> getAll() {
         log.info("getAll");
-        return MealsUtil.getTos(getAllMeals(), MealsUtil.DEFAULT_CALORIES_PER_DAY);
+        return MealsUtil.getTos(getAllMeals(), SecurityUtil.authUserCaloriesPerDay());
     }
+
     private List<Meal> getAllMeals() {
         log.info("getAll");
         return service.getAll(SecurityUtil.getAuthUserId());
@@ -37,7 +41,7 @@ public class MealRestController {
                 DateTimeUtil.toLocalDate(startDate, true),
                 DateTimeUtil.toLocalDate(endDate, false));
         return MealsUtil.getFilteredByTimeTos(meals,
-                MealsUtil.DEFAULT_CALORIES_PER_DAY,
+                SecurityUtil.authUserCaloriesPerDay(),
                 DateTimeUtil.toLocalTime(startTime, true),
                 DateTimeUtil.toLocalTime(endTime, false));
     }
@@ -49,10 +53,14 @@ public class MealRestController {
 
     public Meal create(Meal meal) {
         log.info("create {}", meal);
-        if (meal.isNew())
-            return service.create(meal, SecurityUtil.getAuthUserId());
-        else
-            return service.update(meal, SecurityUtil.getAuthUserId());
+        checkNew(meal);
+        return service.create(meal, SecurityUtil.getAuthUserId());
+    }
+
+    public Meal update(Meal meal, int id) {
+        log.info("update {} with id={}", meal, id);
+        assureIdConsistent(meal, id);
+        return service.update(meal, SecurityUtil.getAuthUserId());
     }
 
     public void delete(int id) {

@@ -25,12 +25,12 @@
     <br><br>
     <form id="filter">
         <b>Фильтр по дате</b><br/>
-            <label>От даты (включая)<input name="startDate" value="${requestScope.startDate}"></label>
-            <label>До даты (включая)<input name="endDate" value="${requestScope.endDate}"></label>
+            <label>От даты (включая)<input type="date" name="startDate" placeholder="ГГГГ-ММ-ДД" value="${param.startDate}"></label>
+            <label>До даты (включая)<input type="date" name="endDate" placeholder="ГГГГ-ММ-ДД" value="${param.endDate}"></label>
         <br/>
         <b>Фильтр по времени</b><br/>
-            <label>От времени (включая)<input name="startTime" value="${requestScope.startTime}"></label>
-            <label>До времени (исключая)<input name="endTime" value="${requestScope.endTime}"></label>
+            <label>От времени (включая)<input type="time" name="startTime" placeholder="ЧЧ:ММ" value="${param.startTime}"></label>
+            <label>До времени (исключая)<input type="time" name="endTime" placeholder="ЧЧ:ММ" value="${param.endTime}"></label>
         <br/>
             <input type="submit" name="action" value="filter">
     </form>

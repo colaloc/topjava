@@ -6,12 +6,12 @@ import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Repository
 public class InMemoryUserRepository implements UserRepository {
@@ -32,7 +32,7 @@ public class InMemoryUserRepository implements UserRepository {
             user.setId(counter.incrementAndGet());
             return repository.put(user.getId(), user);
         }
-        return repository.computeIfPresent(user.getId(), (id, oldMeal) -> user);
+        return repository.computeIfPresent(user.getId(), (id, oldUser) -> user);
     }
 
     @Override
@@ -44,16 +44,19 @@ public class InMemoryUserRepository implements UserRepository {
     @Override
     public List<User> getAll() {
         log.info("getAll");
-        List<User> users = (new ArrayList<>(repository.values()));
-        users.sort(Comparator.comparing(User::getEmail));
-        users.sort(Comparator.comparing(User::getName));
-        return users;
+        return repository
+                .values()
+                .stream()
+                .sorted(Comparator.comparing(User::getName)
+                        .thenComparing(User::getEmail))
+                .collect(Collectors.toList());
     }
 
     @Override
     public User getByEmail(String email) {
         log.info("getByEmail {}", email);
-        return getAll()
+        return repository
+                .values()
                 .stream()
                 .filter(user -> user.getEmail().equals(email))
                 .findFirst().orElse(null);
