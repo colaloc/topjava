@@ -32,15 +32,13 @@ public class InMemoryMealRepository implements MealRepository {
     @Override
     public Meal save(Meal meal, int userId) {
         log.info("save {}", meal);
-        meal.setUserId(userId);
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
-            Map<Integer, Meal> entry = repository.get(userId) == null ? new HashMap<>() : repository.get(userId);
-            entry.put(meal.getId(), meal);
-            repository.put(userId, entry);
+            repository.computeIfAbsent(userId, integer -> new HashMap<>()).put(meal.getId(), meal);
             return meal;
         }
-        return get(meal.getId(), userId) == null ? null : repository.get(userId).computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
+        return get(meal.getId(), userId) == null ? null :
+                repository.get(userId).computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
     }
 
     @Override
@@ -52,8 +50,7 @@ public class InMemoryMealRepository implements MealRepository {
     @Override
     public Meal get(int id, int userId) {
         log.info("get {}", id);
-        Meal meal = repository.get(userId).get(id);
-        return meal.getUserId() == userId ? meal : null;
+        return repository.get(userId).get(id);
     }
 
     @Override
@@ -65,19 +62,16 @@ public class InMemoryMealRepository implements MealRepository {
     @Override
     public List<Meal> getFilteredByDate(int userId, LocalDate startDate, LocalDate endDate) {
         log.info("getFilteredByDate");
-        return filterByPredicate(userId, meal -> DateTimeUtil.isBetweenInclusive(meal.getDate(), startDate, endDate));
+        return filterByPredicate(userId, meal -> DateTimeUtil.isBetweenHalfOpen(meal.getDate(), startDate, endDate));
     }
 
     private List<Meal> filterByPredicate(int userId, Predicate<Meal> filter) {
-        Predicate<Meal> combinedFilter = meal -> meal.getUserId() == userId;
-        combinedFilter = combinedFilter.and(filter);
         return repository
                 .get(userId)
                 .values()
                 .stream()
-                .filter(combinedFilter)
-                .sorted(Comparator.comparing(Meal::getDate).reversed()
-                        .thenComparing(Meal::getTime).reversed())
+                .filter(filter)
+                .sorted(Comparator.comparing(Meal::getDateTime).reversed())
                 .collect(Collectors.toList());
     }
 }
