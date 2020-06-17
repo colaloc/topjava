@@ -16,16 +16,12 @@ public class DateTimeUtil {
         return ldt == null ? "" : ldt.format(DATE_TIME_FORMATTER);
     }
 
-    public static LocalDate toLocalDate(String date, boolean start) {
-        return start ?
-                date.isEmpty() ? LocalDate.MIN : LocalDate.parse(date) :
-                date.isEmpty() ? LocalDate.MAX : LocalDate.parse(date).plusDays(1);
+    public static LocalDate toLocalDate(String date) {
+        return date.isEmpty() ? null : LocalDate.parse(date);
     }
 
-    public static LocalTime toLocalTime(String time, boolean start) {
-        return start ?
-                time.isEmpty() ? LocalTime.MIN : LocalTime.parse(time) :
-                time.isEmpty() ? LocalTime.MAX : LocalTime.parse(time);
+    public static LocalTime toLocalTime(String time) {
+        return time.isEmpty() ? null : LocalTime.parse(time);
     }
 }
 

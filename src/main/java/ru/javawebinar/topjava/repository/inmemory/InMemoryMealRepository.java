@@ -37,20 +37,23 @@ public class InMemoryMealRepository implements MealRepository {
             repository.computeIfAbsent(userId, integer -> new HashMap<>()).put(meal.getId(), meal);
             return meal;
         }
-        return get(meal.getId(), userId) == null ? null :
-                repository.get(userId).computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
+        Map<Integer, Meal> entry = repository.get(userId);
+        return entry == null ? null :
+                entry.computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
     }
 
     @Override
     public boolean delete(int id, int userId) {
         log.info("delete {}", id);
-        return get(id, userId) != null && repository.get(userId).remove(id) != null;
+        Map<Integer, Meal> entry = repository.get(userId);
+        return entry != null && entry.remove(id) != null;
     }
 
     @Override
     public Meal get(int id, int userId) {
         log.info("get {}", id);
-        return repository.get(userId).get(id);
+        Map<Integer, Meal> entry = repository.get(userId);
+        return entry == null ? null : entry.get(id);
     }
 
     @Override
@@ -67,7 +70,7 @@ public class InMemoryMealRepository implements MealRepository {
 
     private List<Meal> filterByPredicate(int userId, Predicate<Meal> filter) {
         return repository
-                .get(userId)
+                .getOrDefault(userId, new HashMap<>())
                 .values()
                 .stream()
                 .filter(filter)

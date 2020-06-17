@@ -6,10 +6,11 @@ import org.springframework.stereotype.Controller;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.to.MealTo;
-import ru.javawebinar.topjava.util.DateTimeUtil;
 import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
@@ -30,15 +31,14 @@ public class MealRestController {
         return MealsUtil.getTos(service.getAll(SecurityUtil.authUserId()), SecurityUtil.authUserCaloriesPerDay());
     }
 
-    public List<MealTo> getFiltered(String startDate, String endDate, String startTime, String endTime) {
+    public List<MealTo> getFiltered(LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
         log.info("getFiltered");
-        List<Meal> meals = service.getFilteredByDate(SecurityUtil.authUserId(),
-                DateTimeUtil.toLocalDate(startDate, true),
-                DateTimeUtil.toLocalDate(endDate, false));
-        return MealsUtil.getFilteredByTimeTos(meals,
-                SecurityUtil.authUserCaloriesPerDay(),
-                DateTimeUtil.toLocalTime(startTime, true),
-                DateTimeUtil.toLocalTime(endTime, false));
+        if (startDate == null) startDate = LocalDate.MIN;
+        if (endDate == null) endDate = LocalDate.MAX;
+        if (startTime == null) startTime = LocalTime.MIN;
+        if (endTime == null) endTime = LocalTime.MAX;
+        List<Meal> meals = service.getFilteredByDate(SecurityUtil.authUserId(), startDate, endDate);
+        return MealsUtil.getFilteredByTimeTos(meals, SecurityUtil.authUserCaloriesPerDay(), startTime, endTime);
     }
 
     public Meal get(int id) {
