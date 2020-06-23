@@ -20,7 +20,6 @@ CREATE UNIQUE INDEX users_unique_email_idx ON users (email);
 
 CREATE TABLE user_roles
 (
-    id      INTEGER PRIMARY KEY UNIQUE DEFAULT nextval('global_seq'),
     user_id INTEGER NOT NULL,
     role    VARCHAR,
     CONSTRAINT user_roles_idx UNIQUE (user_id, role),
@@ -29,7 +28,7 @@ CREATE TABLE user_roles
 
 CREATE TABLE meals
 (
-    id          INTEGER PRIMARY KEY UNIQUE DEFAULT nextval('global_seq'),
+    id          INTEGER PRIMARY KEY DEFAULT nextval('global_seq'),
     dateTime    TIMESTAMP NOT NULL,
     description VARCHAR   NOT NULL,
     calories    INTEGER   NOT NULL,
@@ -37,4 +36,3 @@ CREATE TABLE meals
     CONSTRAINT user_id_datetime_idx UNIQUE (user_id, dateTime),
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
-CREATE INDEX meals_datetime_idx ON meals (datetime);
