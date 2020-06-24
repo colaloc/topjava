@@ -12,6 +12,7 @@ import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 
 import static org.junit.Assert.assertNull;
@@ -20,6 +21,7 @@ import static ru.javawebinar.topjava.MealTestData.*;
 
 @ContextConfiguration({
         "classpath:spring/spring-app.xml",
+        "classpath:spring/spring-repo-jdbc.xml",
         "classpath:spring/spring-db.xml"
 })
 @RunWith(SpringRunner.class)
@@ -34,7 +36,7 @@ public class MealServiceTest {
 
     @Test
     public void create() throws Exception {
-        Meal newMeal = getCopy(MEAL_NEW);
+        Meal newMeal = new Meal(MEAL_NEW);
         Meal created = service.create(newMeal, USER_ID);
         Integer newId = created.getId();
         newMeal.setId(newId);
@@ -66,9 +68,9 @@ public class MealServiceTest {
 
     @Test
     public void update() throws Exception {
-        Meal updatedMeal = getCopy(MEAL_AFTER_UPDATE);
+        Meal updatedMeal = new Meal(MEAL_AFTER_UPDATE);
         service.update(updatedMeal, USER_ID);
-        assertMatch(repository.get(updatedMeal.getId(), USER_ID), updatedMeal);
+        assertMatch(repository.get(MEAL_BEFORE_UPDATE.getId(), USER_ID), updatedMeal);
     }
 
     @Test
@@ -79,7 +81,9 @@ public class MealServiceTest {
 
     @Test
     public void getBetweenInclusive() throws Exception {
-        List<Meal> meals = service.getBetweenInclusive(LocalDate.parse("2020-01-31"), LocalDate.parse("2020-01-31"), USER_ID);
+        List<Meal> meals = service.getBetweenInclusive(
+                LocalDate.of(2020, Month.JANUARY, 31),
+                LocalDate.of(2020, Month.JANUARY, 31), USER_ID);
         assertMatch(meals, MEAL_BEFORE_UPDATE, MEAL_FOR_GET);
     }
 
@@ -95,6 +99,6 @@ public class MealServiceTest {
 
     @Test
     public void updateAlien() throws Exception {
-        assertThrows(NotFoundException.class, () -> service.update(getCopy(MEAL_AFTER_UPDATE), ADMIN_ID));
+        assertThrows(NotFoundException.class, () -> service.update(new Meal(MEAL_AFTER_UPDATE), ADMIN_ID));
     }
 }
