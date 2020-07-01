@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class MyClassRule implements TestRule {
@@ -24,12 +25,27 @@ public class MyClassRule implements TestRule {
 
         public MyStatement(Statement base) {
             this.base = base;
+            timers.clear();
         }
 
         @Override
         public void evaluate() throws Throwable {
             base.evaluate();
-            timers.forEach(log::info);
+            //timers.forEach(log::info);
+            log.info(toTableView());
+        }
+
+        private String toTableView() {
+            StringBuilder stringBuilder = new StringBuilder();
+            int max = timers.stream().max(Comparator.comparingInt(String::length)).get().length();
+            for (String s : timers) {
+                stringBuilder.append(System.lineSeparator());
+                stringBuilder.append(s.split(" - ")[0]);
+                for (int i = 0; i < max + 3 - s.length(); i++)
+                    stringBuilder.append(" ");
+                stringBuilder.append(s.split(" - ")[1]);
+            }
+            return stringBuilder.toString();
         }
     }
 }
